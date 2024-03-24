@@ -1,6 +1,6 @@
-import "@/styles/globals.css";
-
 import { ClerkProvider } from "@clerk/nextjs";
+
+import "@/styles/globals.css";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
