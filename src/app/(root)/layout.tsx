@@ -1,8 +1,10 @@
-import "@/styles/globals.css";
-
 import type { Metadata } from "next";
 
 import { ClerkProvider } from "@clerk/nextjs";
+
+import { Toaster } from "@/components/ui/sonner";
+
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "E-Commerce CMS",
@@ -20,6 +22,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <html lang="en">
         <body className="flex min-h-dvh max-w-[100dvw] flex-col overflow-x-hidden font-system antialiased">
           {children}
+          <Toaster closeButton richColors />
         </body>
       </html>
     </ClerkProvider>
