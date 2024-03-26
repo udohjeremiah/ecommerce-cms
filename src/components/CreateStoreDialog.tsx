@@ -11,6 +11,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -28,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useMounted } from "@/hooks/use-mounted";
+import { useCreateStore } from "@/hooks/use-create-store";
 
 const formSchema = z.object({
   name: z
@@ -41,10 +42,8 @@ const formSchema = z.object({
     }),
 });
 
-export default function StoreModal() {
+export default function CreateStoreDialog() {
   const router = useRouter();
-
-  const isMounted = useMounted();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,6 +51,8 @@ export default function StoreModal() {
       name: "",
     },
   });
+
+  const { createStore, setCreateStore } = useCreateStore();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -69,23 +70,24 @@ export default function StoreModal() {
       }
 
       const { store } = await response.json();
-      toast.success(`🎉 ${values.name} store created successfully.`);
-      form.reset();
-      setTimeout(() => {
-        router.push(`/${store.id}`);
-      }, 2000);
+      router.push(`/${store.id}`);
+      toast.success(`🎉 ${store.name} store created successfully.`);
     } catch (error) {
       console.error(error);
       toast.error("💔 Something went wrong.");
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <Dialog open={true} onOpenChange={() => {}}>
+    <Dialog
+      open={createStore}
+      onOpenChange={(open) => {
+        if (!open) {
+          form.reset();
+        }
+        setCreateStore(open);
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create Store</DialogTitle>
@@ -118,7 +120,12 @@ export default function StoreModal() {
             />
           </form>
         </Form>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Cancel
+            </Button>
+          </DialogClose>
           <Button
             type="submit"
             disabled={form.formState.isSubmitting}
