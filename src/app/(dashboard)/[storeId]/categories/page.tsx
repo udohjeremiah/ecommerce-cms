@@ -6,19 +6,16 @@ import { auth } from "@clerk/nextjs";
 import { format } from "date-fns";
 
 import APIList from "@/components/APIList";
+import { CategoryColumn, columns } from "@/components/columns/CategoryColumns";
 import DataTable from "@/components/DataTable";
 import Heading from "@/components/Heading";
-import {
-  BillboardColumn,
-  columns,
-} from "@/components/columns/BillboardColumns";
-import CreateBillboardDialog from "@/components/dialogs/CreateBillboardDialog";
+import CreateCategoryDialog from "@/components/dialogs/CreateCategoryDialog";
 import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 
-interface BillboardsPageProps {
+interface CategoriesPageProps {
   params: { storeId: string };
 }
 
@@ -38,12 +35,12 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${store?.name} Store Billboards | E-Commerce CMS`,
-    description: `Manage the billboards for your ${store?.name} store.`,
+    title: `${store?.name} Store Categories | E-Commerce CMS`,
+    description: `Manage the categories for your ${store?.name} store.`,
   };
 }
 
-export default async function BillboardsPage({ params }: BillboardsPageProps) {
+export default async function CategoriesPage({ params }: CategoriesPageProps) {
   const { userId } = auth();
 
   if (!userId) {
@@ -59,17 +56,21 @@ export default async function BillboardsPage({ params }: BillboardsPageProps) {
   }
 
   const billboards = await prisma.billboard.findMany({
+    where: { storeId: params.storeId },
+  });
+
+  const categories = await prisma.category.findMany({
     where: { storeId: store.id },
+    include: { Billboard: true },
     orderBy: { createdAt: "desc" },
   });
 
-  const formattedBillboards: BillboardColumn[] = billboards.map(
-    (billboard) => ({
-      id: billboard.id,
-      label: billboard.label,
-      createdAt: format(billboard.createdAt, "MMMM do, yyyy"),
-    }),
-  );
+  const formattedCategories: CategoryColumn[] = categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    billboardLabel: category.Billboard.label,
+    createdAt: format(category.createdAt, "MMMM do, yyyy"),
+  }));
 
   return (
     <main
@@ -85,19 +86,19 @@ export default async function BillboardsPage({ params }: BillboardsPageProps) {
         )}
       >
         <Heading
-          title={`Billboards (${billboards.length})`}
-          description={`Manage the billboards for your ${store.name} store.`}
+          title={`Categories (${categories.length})`}
+          description={`Manage the categories for your ${store.name} store.`}
         />
-        <CreateBillboardDialog userId={userId} />
+        <CreateCategoryDialog billboards={billboards} />
       </div>
       <Separator />
       <DataTable
         columns={columns}
-        filterColumn="label"
-        data={formattedBillboards}
+        filterColumn="name"
+        data={formattedCategories}
       />
       <Separator />
-      <Heading title="API" description="API calls for billboards" />
+      <Heading title="API" description="API calls for categories" />
       <APIList
         apis={[
           {
@@ -105,26 +106,26 @@ export default async function BillboardsPage({ params }: BillboardsPageProps) {
             variant: "public",
             route: "",
           },
-          { title: "GET", route: "billboards", variant: "public" },
+          { title: "GET", route: "categories", variant: "public" },
           {
             title: "GET",
             variant: "public",
-            route: `billboards/{billboardId}`,
+            route: `categories/{categoryId}`,
           },
           {
             title: "POST",
             variant: "admin",
-            route: `billboards`,
+            route: `categories`,
           },
           {
             title: "PATCH",
             variant: "admin",
-            route: `billboards/{billboardId}`,
+            route: `categories/{categoryId}`,
           },
           {
             title: "DELETE",
             variant: "admin",
-            route: `billboards/{billboardId}`,
+            route: `categories/{categoryId}`,
           },
         ]}
       />

@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, CopyIcon, EditIcon, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 
+import DeleteCategoryDialog from "@/components/dialogs/DeleteCategoryDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,28 +15,43 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import DeleteBillboardDialog from "./dialogs/DeleteBillboardDialog";
 
-export type BillboardColumn = {
+export type CategoryColumn = {
   id: string;
-  label: string;
+  name: string;
+  billboardLabel: string;
   createdAt: string;
 };
 
-export const columns: ColumnDef<BillboardColumn>[] = [
+export const columns: ColumnDef<CategoryColumn>[] = [
   {
-    accessorKey: "label",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Label
+          Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+  },
+  {
+    accessorKey: "billboardLabel",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Billboard
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => row.original.billboardLabel,
   },
   {
     accessorKey: "createdAt",
@@ -53,11 +69,11 @@ export const columns: ColumnDef<BillboardColumn>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <BillboardCellActions row={row.original} />,
+    cell: ({ row }) => <CategoryCellActions row={row.original} />,
   },
 ];
 
-export function BillboardCellActions({ row }: { row: BillboardColumn }) {
+export function CategoryCellActions({ row }: { row: CategoryColumn }) {
   const params = useParams();
   const router = useRouter();
 
@@ -76,7 +92,7 @@ export function BillboardCellActions({ row }: { row: BillboardColumn }) {
             asChild
             onClick={() => {
               navigator.clipboard.writeText(row.id);
-              toast.success("✅ Billboard ID copied successfully.");
+              toast.success("✅ Category ID copied successfully.");
             }}
           >
             <Button variant="ghost" className="w-full justify-start">
@@ -87,17 +103,17 @@ export function BillboardCellActions({ row }: { row: BillboardColumn }) {
           <DropdownMenuItem
             asChild
             onClick={() =>
-              router.push(`/${params.storeId}/billboards/${row.id}`)
+              router.push(`/${params.storeId}/categories/${row.id}`)
             }
           >
             <Button variant="ghost" className="w-full justify-start">
               <EditIcon className="mr-2 h-4 w-4" />
-              Update Billboard
+              Update Category
             </Button>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <DeleteBillboardDialog
-              billboard={row}
+            <DeleteCategoryDialog
+              category={row}
               variant="ghost"
               triggerBtnClassName="w-full justify-start px-2 py-1.5 cursor-default"
             />

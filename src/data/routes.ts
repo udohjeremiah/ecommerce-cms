@@ -10,6 +10,11 @@ export const routes = [
     active: (pathName: string, route: string) => pathName.startsWith(route),
   },
   {
+    href: "categories",
+    label: "Categories",
+    active: (pathName: string, route: string) => pathName.startsWith(route),
+  },
+  {
     href: "settings",
     label: "Settings",
     active: (pathName: string, route: string) => pathName.startsWith(route),

@@ -3,29 +3,25 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { auth } from "@clerk/nextjs";
-import { format } from "date-fns";
 
 import APIList from "@/components/APIList";
-import DataTable from "@/components/DataTable";
 import Heading from "@/components/Heading";
-import {
-  BillboardColumn,
-  columns,
-} from "@/components/columns/BillboardColumns";
-import CreateBillboardDialog from "@/components/dialogs/CreateBillboardDialog";
+import DeleteCategoryDialog from "@/components/dialogs/DeleteCategoryDialog";
+import CategoryForm from "@/components/forms/CategoryForm";
 import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
+import { format } from "date-fns";
 
-interface BillboardsPageProps {
-  params: { storeId: string };
+interface CategoryPageProps {
+  params: { storeId: string; categoryId: string };
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: { storeId: string };
+  params: { storeId: string; categoryId: string };
 }): Promise<Metadata> {
   const { userId } = auth();
 
@@ -37,13 +33,17 @@ export async function generateMetadata({
     where: { id: params.storeId, userId },
   });
 
+  const category = await prisma.category.findUnique({
+    where: { id: params.categoryId, storeId: params.storeId },
+  });
+
   return {
-    title: `${store?.name} Store Billboards | E-Commerce CMS`,
-    description: `Manage the billboards for your ${store?.name} store.`,
+    title: `${store?.name} Store ${category?.name} Category | E-Commerce CMS`,
+    description: `Manage the ${category?.name} for your ${store?.name} store.`,
   };
 }
 
-export default async function BillboardsPage({ params }: BillboardsPageProps) {
+export default async function CategoryPage({ params }: CategoryPageProps) {
   const { userId } = auth();
 
   if (!userId) {
@@ -59,17 +59,17 @@ export default async function BillboardsPage({ params }: BillboardsPageProps) {
   }
 
   const billboards = await prisma.billboard.findMany({
-    where: { storeId: store.id },
-    orderBy: { createdAt: "desc" },
+    where: { storeId: params.storeId },
   });
 
-  const formattedBillboards: BillboardColumn[] = billboards.map(
-    (billboard) => ({
-      id: billboard.id,
-      label: billboard.label,
-      createdAt: format(billboard.createdAt, "MMMM do, yyyy"),
-    }),
-  );
+  const category = await prisma.category.findUnique({
+    where: { id: params.categoryId, storeId: store.id },
+    include: { Billboard: true },
+  });
+
+  if (!category) {
+    redirect(`/${store.id}/categories`);
+  }
 
   return (
     <main
@@ -85,19 +85,23 @@ export default async function BillboardsPage({ params }: BillboardsPageProps) {
         )}
       >
         <Heading
-          title={`Billboards (${billboards.length})`}
-          description={`Manage the billboards for your ${store.name} store.`}
+          title={`${store?.name} Store ${category?.name} Category`}
+          description={`Manage the ${category.name} category for your ${store?.name} store.`}
         />
-        <CreateBillboardDialog userId={userId} />
+        <DeleteCategoryDialog
+          category={{
+            id: category.id,
+            name: category.name,
+            billboardLabel: category.Billboard.label,
+            createdAt: format(category.createdAt, "MMMM do, yyyy"),
+          }}
+          triggerBtnClassName="w-max"
+        />
       </div>
       <Separator />
-      <DataTable
-        columns={columns}
-        filterColumn="label"
-        data={formattedBillboards}
-      />
+      <CategoryForm billboards={billboards} category={category} />
       <Separator />
-      <Heading title="API" description="API calls for billboards" />
+      <Heading title="API" description="API calls for category" />
       <APIList
         apis={[
           {
@@ -105,26 +109,20 @@ export default async function BillboardsPage({ params }: BillboardsPageProps) {
             variant: "public",
             route: "",
           },
-          { title: "GET", route: "billboards", variant: "public" },
           {
             title: "GET",
             variant: "public",
-            route: `billboards/{billboardId}`,
-          },
-          {
-            title: "POST",
-            variant: "admin",
-            route: `billboards`,
+            route: `categories/{categoryId}`,
           },
           {
             title: "PATCH",
             variant: "admin",
-            route: `billboards/{billboardId}`,
+            route: `categories/{categoryId}`,
           },
           {
             title: "DELETE",
             variant: "admin",
-            route: `billboards/{billboardId}`,
+            route: `categories/{categoryId}`,
           },
         ]}
       />
