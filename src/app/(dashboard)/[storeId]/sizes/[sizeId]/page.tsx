@@ -7,21 +7,21 @@ import { format } from "date-fns";
 
 import APIList from "@/components/APIList";
 import Heading from "@/components/Heading";
-import DeleteBillboardDialog from "@/components/dialogs/DeleteBillboardDialog";
-import BillboardForm from "@/components/forms/BillboardForm";
+import DeleteSizeDialog from "@/components/dialogs/DeleteSizeDialog";
+import SizeForm from "@/components/forms/SizeForm";
 import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 
-interface BillboardPageProps {
-  params: { storeId: string; billboardId: string };
+interface SizePageProps {
+  params: { storeId: string; sizeId: string };
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: { storeId: string };
+  params: { storeId: string; sizeId: string };
 }): Promise<Metadata> {
   const { userId } = auth();
 
@@ -33,13 +33,17 @@ export async function generateMetadata({
     where: { id: params.storeId, userId },
   });
 
+  const size = await prisma.size.findUnique({
+    where: { id: params.sizeId, storeId: params.storeId },
+  });
+
   return {
-    title: `${store?.name} Store Billboard | E-Commerce CMS`,
-    description: `Manage this billboard for your ${store?.name} store.`,
+    title: `${store?.name} Store ${size?.name} Size | E-Commerce CMS`,
+    description: `Manage the ${size?.name} size for your ${store?.name} store.`,
   };
 }
 
-export default async function BillboardPage({ params }: BillboardPageProps) {
+export default async function SizePage({ params }: SizePageProps) {
   const { userId } = auth();
 
   if (!userId) {
@@ -54,12 +58,12 @@ export default async function BillboardPage({ params }: BillboardPageProps) {
     redirect("/");
   }
 
-  const billboard = await prisma.billboard.findUnique({
-    where: { id: params.billboardId, storeId: store.id },
+  const size = await prisma.size.findUnique({
+    where: { id: params.sizeId, storeId: store.id },
   });
 
-  if (!billboard) {
-    redirect(`/${store.id}/billboards`);
+  if (!size) {
+    redirect(`/${store.id}/sizes`);
   }
 
   return (
@@ -79,17 +83,18 @@ export default async function BillboardPage({ params }: BillboardPageProps) {
           title={`${store?.name} Store Billboard`}
           description={`Manage this billboard for your ${store?.name} store.`}
         />
-        <DeleteBillboardDialog
-          billboard={{
-            id: billboard.id,
-            label: billboard.label,
-            createdAt: format(billboard.createdAt, "MMMM do, yyyy"),
+        <DeleteSizeDialog
+          size={{
+            id: size.id,
+            name: size.name,
+            value: size.value,
+            createdAt: format(size.createdAt, "MMMM do, yyyy"),
           }}
           triggerBtnClassName="w-max"
         />
       </div>
       <Separator />
-      <BillboardForm billboard={billboard} />
+      <SizeForm size={size} />
       <Separator />
       <Heading title="API" description="API calls for billboard" />
       <APIList
@@ -102,17 +107,17 @@ export default async function BillboardPage({ params }: BillboardPageProps) {
           {
             title: "GET",
             variant: "public",
-            route: `billboards/{billboardId}`,
+            route: `sizes/{sizeId}`,
           },
           {
             title: "PATCH",
             variant: "admin",
-            route: `billboards/{billboardId}`,
+            route: `sizes/{sizeId}`,
           },
           {
             title: "DELETE",
             variant: "admin",
-            route: `billboards/{billboardId}`,
+            route: `sizes/{sizeId}`,
           },
         ]}
       />

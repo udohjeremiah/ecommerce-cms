@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { auth } from "@clerk/nextjs";
+import { format } from "date-fns";
 
 import APIList from "@/components/APIList";
 import Heading from "@/components/Heading";
@@ -12,7 +13,6 @@ import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
-import { format } from "date-fns";
 
 interface CategoryPageProps {
   params: { storeId: string; categoryId: string };
@@ -39,7 +39,7 @@ export async function generateMetadata({
 
   return {
     title: `${store?.name} Store ${category?.name} Category | E-Commerce CMS`,
-    description: `Manage the ${category?.name} for your ${store?.name} store.`,
+    description: `Manage the ${category?.name} category for your ${store?.name} store.`,
   };
 }
 
