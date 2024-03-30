@@ -20,6 +20,11 @@ export const routes = [
     active: (pathName: string, route: string) => pathName.startsWith(route),
   },
   {
+    href: "colors",
+    label: "Colors",
+    active: (pathName: string, route: string) => pathName.startsWith(route),
+  },
+  {
     href: "settings",
     label: "Settings",
     active: (pathName: string, route: string) => pathName.startsWith(route),

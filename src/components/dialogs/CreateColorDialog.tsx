@@ -38,22 +38,25 @@ const formSchema = z.object({
   name: z
     .string()
     .min(1, {
-      message: "Size name must be at least 1 characters.",
+      message: "Color name must be at least 1 characters.",
     })
     .max(20, {
-      message: "Size name must be at most 20 characters.",
+      message: "Color name must be at most 20 characters.",
     }),
   value: z
     .string()
-    .min(1, {
-      message: "Size value must be at least 1 characters.",
+    .min(4, {
+      message: "Color value must be at least 4 characters.",
     })
-    .max(20, {
-      message: "Size value must be at most 20 characters.",
+    .max(7, {
+      message: "Color value must be at most 7 characters.",
+    })
+    .regex(/^#[0-9A-Fa-f]{3,6}$/, {
+      message: "Color value must be a valid hex code.",
     }),
 });
 
-export default function CreateSizeDialog() {
+export default function CreateColorDialog() {
   const [open, setOpen] = useState(false);
 
   const params = useParams();
@@ -69,7 +72,7 @@ export default function CreateSizeDialog() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch(`/api/${params.storeId}/sizes`, {
+      const response = await fetch(`/api/${params.storeId}/colors`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +89,7 @@ export default function CreateSizeDialog() {
       setOpen(false);
       router.refresh();
       toast.success(
-        `🎉 New size for the ${store.name} store has been created successfully.`,
+        `🎉 New color for the ${store.name} store has been created successfully.`,
       );
     } catch (error) {
       console.error(error);
@@ -129,12 +132,12 @@ export default function CreateSizeDialog() {
                   <FormControl>
                     <Input
                       disabled={form.formState.isSubmitting}
-                      placeholder="e.g., Large"
+                      placeholder="e.g., Blue"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    This is the name of your new size.
+                    This is the name of your new color.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -147,14 +150,20 @@ export default function CreateSizeDialog() {
                 <FormItem>
                   <FormLabel>Value</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={form.formState.isSubmitting}
-                      placeholder="e.g., lg"
-                      {...field}
-                    />
+                    <div className="flex items-center gap-4">
+                      <Input
+                        disabled={form.formState.isSubmitting}
+                        placeholder="e.g., #0000FF"
+                        {...field}
+                      />
+                      <div
+                        className="rounded-full border p-4 shadow"
+                        style={{ backgroundColor: field.value }}
+                      ></div>
+                    </div>
                   </FormControl>
                   <FormDescription>
-                    This is the value of your new size.
+                    This is the value of your new color.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
