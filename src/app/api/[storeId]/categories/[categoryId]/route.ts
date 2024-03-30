@@ -6,10 +6,10 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { storeId: string; billboardId: string } },
+  { params }: { params: { storeId: string; categoryId: string } },
 ) {
   try {
-    if (!params.storeId || !params.billboardId) {
+    if (!params.storeId || !params.categoryId) {
       return NextResponse.json(
         { success: false, message: "Bad Request" },
         { status: 400 },
@@ -27,28 +27,28 @@ export async function GET(
       );
     }
 
-    const billboard = await prisma.billboard.findUnique({
-      where: { id: params.billboardId, storeId: params.storeId },
+    const category = await prisma.category.findUnique({
+      where: { id: params.categoryId, storeId: params.storeId },
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: `Billboard for the ${store.name} store retrieved successfully.`,
+        message: `${category?.name} category for the ${store.name} store retrieved successfully.`,
         store,
-        billboard,
+        category,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("[STOREID]_BILLBOARDS_[BILLBOARDID]_GET] Error:", error);
+    console.error("[STOREID]_CATEGORIES_[CATEGORYID]_GET] Error:", error);
     return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { storeId: string; billboardId: string } },
+  { params }: { params: { storeId: string; categoryId: string } },
 ) {
   try {
     const user = await currentUser();
@@ -60,7 +60,7 @@ export async function PATCH(
       );
     }
 
-    if (!params.storeId || !params.billboardId) {
+    if (!params.storeId || !params.categoryId) {
       return NextResponse.json(
         { success: false, message: "Bad Request" },
         { status: 400 },
@@ -81,29 +81,29 @@ export async function PATCH(
     const requestData = await request.json();
     const updatedFields = { ...requestData };
 
-    const billboard = await prisma.billboard.update({
-      where: { id: params.billboardId, storeId: params.storeId },
+    const category = await prisma.category.update({
+      where: { id: params.categoryId, storeId: params.storeId },
       data: updatedFields,
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: `Billboard for the ${store.name} store updated successfully.`,
+        message: `${category.name} category for the ${store.name} store updated successfully.`,
         store,
-        billboard,
+        category,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("[STOREID]_BILLBOARDS_[BILLBOARDID]_PATCH] Error:", error);
+    console.error("[STOREID]_CATEGORIES_[CATEGORYID]_PATCH] Error:", error);
     return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { storeId: string; billboardId: string } },
+  { params }: { params: { storeId: string; categoryId: string } },
 ) {
   try {
     const user = await currentUser();
@@ -115,7 +115,7 @@ export async function DELETE(
       );
     }
 
-    if (!params.storeId || !params.billboardId) {
+    if (!params.storeId || !params.categoryId) {
       return NextResponse.json(
         { success: false, message: "Bad Request" },
         { status: 400 },
@@ -133,21 +133,21 @@ export async function DELETE(
       );
     }
 
-    const billboard = await prisma.billboard.delete({
-      where: { id: params.billboardId, storeId: params.storeId },
+    const category = await prisma.category.delete({
+      where: { id: params.categoryId, storeId: params.storeId },
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: `Billboard for the ${store.name} store deleted successfully.`,
+        message: `${category.name} category for the ${store.name} store deleted successfully.`,
         store,
-        billboard,
+        category,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("[STOREID]_BILLBOARDS_[BILLBOARDID]_DELETE] Error:", error);
+    console.error("[STOREID]_CATEGORIES_[CATEGORYID]_DELETE] Error:", error);
     return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }

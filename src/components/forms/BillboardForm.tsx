@@ -48,7 +48,7 @@ const labelFormSchema = z.object({
     }),
 });
 
-export default function SettingsForm({ billboard }: BillboardFormProps) {
+export default function BillboardForm({ billboard }: BillboardFormProps) {
   const [imagePublicId, setImagePublicId] = useState(billboard.imagePublicId);
   const [isSaving, setIsSaving] = useState(false);
 

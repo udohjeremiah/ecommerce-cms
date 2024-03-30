@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    const billboards = await prisma.billboard.findMany({
+    const categories = await prisma.category.findMany({
       where: {
         storeId: params.storeId,
       },
@@ -36,14 +36,14 @@ export async function GET(
     return NextResponse.json(
       {
         success: true,
-        message: `Billboards for the ${store.name} store retrieved successfully.`,
+        message: `Categories for the ${store.name} store retrieved successfully.`,
         store,
-        billboards,
+        categories,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("[STOREID]_BILLBOARDS_GET] Error:", error);
+    console.error("[STOREID]_CATEGORIES_GET] Error:", error);
     return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }
@@ -80,19 +80,19 @@ export async function POST(
       );
     }
 
-    const { label, imagePublicId } = await request.json();
+    const { name, billboardId } = await request.json();
 
-    if (!label || !imagePublicId) {
+    if (!name || !billboardId) {
       return NextResponse.json(
         { success: false, message: "Bad Request" },
         { status: 400 },
       );
     }
 
-    const billboard = await prisma.billboard.create({
+    const category = await prisma.category.create({
       data: {
-        label,
-        imagePublicId,
+        name,
+        billboardId,
         storeId: params.storeId,
       },
     });
@@ -100,14 +100,14 @@ export async function POST(
     return NextResponse.json(
       {
         success: true,
-        message: "New billboard created successfully.",
+        message: "New category created successfully.",
         store,
-        billboard,
+        category,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("[STOREID]_BILLBOARDS_POST] Error:", error);
+    console.error("[STOREID]_CATEGORIES_POST] Error:", error);
     return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }

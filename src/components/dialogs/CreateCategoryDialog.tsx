@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Billboard } from "@prisma/client";
 import { LoaderCircleIcon, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -31,30 +32,37 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
-  label: z
+  name: z
     .string()
-    .min(4, {
-      message: "Billboard label must be at least 4 characters.",
+    .min(1, {
+      message: "Category name must be at least 1 characters.",
     })
-    .max(60, {
-      message: "Billboard label must be at most 60 characters.",
+    .max(20, {
+      message: "Category name must be at most 20 characters.",
     }),
-  image: z
-    .any()
-    .refine((file) => file?.length !== 0, "Background image is required"),
+  billboardId: z
+    .string()
+    .uuid({ message: "Billboard ID must be a valid UUID." }),
 });
 
-interface CreateBillboardDialogProps {
-  userId: string;
+interface CreateCategoryDialogProps {
+  billboards: Billboard[];
 }
 
-export default function CreateBillboardDialog({
-  userId,
-}: CreateBillboardDialogProps) {
+export default function CreateCategoryDialog({
+  billboards,
+}: CreateCategoryDialogProps) {
   const [open, setOpen] = useState(false);
 
   const params = useParams();
@@ -63,40 +71,20 @@ export default function CreateBillboardDialog({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      label: "",
-      image: "",
+      name: "",
+      billboardId: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formData = new FormData();
-      formData.append("file", values.image);
-      formData.append(
-        "upload_preset",
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "",
-      );
-      formData.append("folder", `ecommerce-cms/${userId}/billboard`);
-
-      const uploadResponse = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      const { public_id } = await uploadResponse.json();
-      const response = await fetch(`/api/${params.storeId}/billboards`, {
+      const response = await fetch(`/api/${params.storeId}/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({
-          label: values.label,
-          imagePublicId: public_id,
-        }),
+        body: JSON.stringify(values),
       });
 
       if (!response.ok) {
@@ -107,7 +95,7 @@ export default function CreateBillboardDialog({
       setOpen(false);
       router.refresh();
       toast.success(
-        `🎉 New billboard for the ${store.name} store has been created successfully.`,
+        `🎉 New category for the ${store.name} store has been created successfully.`,
       );
     } catch (error) {
       console.error(error);
@@ -133,9 +121,9 @@ export default function CreateBillboardDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Billboard</DialogTitle>
+          <DialogTitle>Create Category</DialogTitle>
           <DialogDescription>
-            Add a new billboard to your store and efficiently manage your
+            Add a new category to your store and efficiently manage your
             products, categories, and more.
           </DialogDescription>
         </DialogHeader>
@@ -143,19 +131,19 @@ export default function CreateBillboardDialog({
           <form className="space-y-8">
             <FormField
               control={form.control}
-              name="label"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={form.formState.isSubmitting}
-                      placeholder="e.g., Explore your suits collection."
+                      placeholder="e.g., Men"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    This is the label of your new billboard.
+                    This is the name of your new category.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -163,24 +151,30 @@ export default function CreateBillboardDialog({
             />
             <FormField
               control={form.control}
-              name="image"
+              name="billboardId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Background Image</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                      value={field.value?.fileName}
-                      onChange={(event) =>
-                        form.setValue("image", event.target.files?.[0])
-                      }
-                    />
-                  </FormControl>
+                  <FormLabel>Billboard ID</FormLabel>
+                  <Select
+                    disabled={form.formState.isSubmitting}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a billboard ID to display" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {billboards.map((billboard, index) => (
+                        <SelectItem key={index} value={billboard.id}>
+                          {billboard.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
-                    This is the background image for your new billboard.
+                    This is the billboard for your new category.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
