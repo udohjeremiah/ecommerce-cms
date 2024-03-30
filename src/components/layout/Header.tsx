@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 
-import { auth, UserButton } from "@clerk/nextjs";
+import { UserButton, auth } from "@clerk/nextjs";
 
-import DesktopNav from "@/components/DesktopNav";
-import MobileNav from "@/components/MobileNav";
 import StoreSwitcher from "@/components/StoreSwitcher";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import DesktopNav from "@/components/layout/DesktopNav";
+import MobileNav from "@/components/layout/MobileNav";
 
-import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
+import { cn } from "@/lib/utils";
 
 export default async function Header() {
   const { userId } = auth();
@@ -22,7 +22,7 @@ export default async function Header() {
   });
 
   return (
-    <header className="sticky top-0 border-b bg-background">
+    <header className="sticky top-0 z-50 border-b bg-background backdrop-blur">
       <div
         className={cn(
           "container flex items-center justify-between gap-4 p-4",

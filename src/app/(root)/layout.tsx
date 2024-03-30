@@ -5,7 +5,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
-import CreateStoreDialog from "@/components/CreateStoreDialog";
 
 import CreateStoreProvider from "@/providers/CreateStoreProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
@@ -33,7 +32,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
           >
             <CreateStoreProvider>
               {children}
-              <CreateStoreDialog />
               <Toaster closeButton richColors />
             </CreateStoreProvider>
           </ThemeProvider>

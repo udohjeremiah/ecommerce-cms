@@ -4,10 +4,10 @@ import { auth, ClerkProvider } from "@clerk/nextjs";
 
 import "@/styles/globals.css";
 
+import CreateStoreDialog from "@/components/dialogs/CreateStoreDialog";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner";
-import CreateStoreDialog from "@/components/CreateStoreDialog";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 import prisma from "@/lib/prisma";
 

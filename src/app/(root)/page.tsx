@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@clerk/nextjs";
 
-import RootCreateStore from "@/components/RootCreateStore";
+import CreateStoreDialog from "@/components/dialogs/CreateStoreDialog";
 
 import prisma from "@/lib/prisma";
 
@@ -19,5 +19,5 @@ export default async function RootPage() {
     redirect(`/${store.id}`);
   }
 
-  return <RootCreateStore />;
+  return <CreateStoreDialog initialState={true} />;
 }

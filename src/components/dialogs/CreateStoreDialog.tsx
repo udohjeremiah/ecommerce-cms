@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,7 +44,13 @@ const formSchema = z.object({
     }),
 });
 
-export default function CreateStoreDialog() {
+interface CreateStoreDialogProps {
+  initialState?: boolean;
+}
+
+export default function CreateStoreDialog({
+  initialState = false,
+}: CreateStoreDialogProps) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,6 +61,12 @@ export default function CreateStoreDialog() {
   });
 
   const { createStore, setCreateStore } = useCreateStore();
+
+  useEffect(() => {
+    if (initialState) {
+      setCreateStore(true);
+    }
+  });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {

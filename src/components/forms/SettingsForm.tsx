@@ -21,10 +21,8 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -85,7 +83,7 @@ export default function SettingsForm({ store }: SettingsFormProps) {
 
   return (
     <div className={cn("grid gap-6", "lg:grid-cols-2")}>
-      <Card>
+      <Card className="h-max">
         <CardHeader>
           <CardTitle>Store Name</CardTitle>
           <CardDescription>

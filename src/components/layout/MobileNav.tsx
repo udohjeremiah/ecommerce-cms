@@ -47,7 +47,9 @@ export default function MobileNav() {
               "md:text-base",
             )}
           >
-            <ShoppingBagIcon className="h-6 w-6" />
+            <div className="rounded-full bg-foreground p-2 text-background">
+              <ShoppingBagIcon className="h-6 w-6" />
+            </div>
             E-Commerce CMS
           </Link>
           {routes.map(({ href, label, active }, index) => (
@@ -58,7 +60,7 @@ export default function MobileNav() {
               className={cn(
                 "text-muted-foreground transition-colors",
                 "hover:text-foreground",
-                active(pathName, `/${params.storeId}/${href}`) &&
+                active(pathName, `/${params.storeId}${href && `/${href}`}`) &&
                   "text-foreground",
               )}
             >

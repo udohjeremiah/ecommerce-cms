@@ -1,7 +1,17 @@
 export const routes = [
   {
+    href: "",
+    label: "Overview",
+    active: (pathName: string, route: string) => pathName === route,
+  },
+  {
+    href: "billboards",
+    label: "Billboards",
+    active: (pathName: string, route: string) => pathName.startsWith(route),
+  },
+  {
     href: "settings",
     label: "Settings",
-    active: (pathName: string, href: string) => pathName === href,
+    active: (pathName: string, route: string) => pathName.startsWith(route),
   },
 ];

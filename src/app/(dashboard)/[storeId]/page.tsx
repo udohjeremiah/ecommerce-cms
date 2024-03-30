@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { auth } from "@clerk/nextjs";
 
-import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
   params,

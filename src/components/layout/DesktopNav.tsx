@@ -34,7 +34,8 @@ export default function DesktopNav() {
           className={cn(
             "text-muted-foreground transition-colors",
             "hover:text-foreground",
-            active(pathName, `/${params.storeId}/${href}`) && "text-foreground",
+            active(pathName, `/${params.storeId}${href && `/${href}`}`) &&
+              "text-foreground",
           )}
         >
           {label}

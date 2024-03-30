@@ -4,13 +4,14 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@clerk/nextjs";
 
-import { Separator } from "@/components/ui/separator";
+import APIList from "@/components/APIList";
 import Heading from "@/components/Heading";
+import DeleteStoreDialog from "@/components/dialogs/DeleteStoreDialog";
 import SettingsForm from "@/components/forms/SettingsForm";
+import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
-import DeleteStoreDialog from "@/components/DeleteStoreDialog";
 
 interface SettingsPageProps {
   params: { storeId: string };
@@ -54,7 +55,10 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
 
   return (
     <main
-      className={cn("container flex flex-1 flex-col gap-4 py-4", "md:py-8")}
+      className={cn(
+        "container flex flex-1 flex-col gap-4 py-4",
+        "md:gap-8 md:py-8",
+      )}
     >
       <div
         className={cn(
@@ -70,6 +74,17 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
       </div>
       <Separator />
       <SettingsForm store={store} />
+      <Separator />
+      <Heading title="API" description="API calls for settings" />
+      <APIList
+        apis={[
+          {
+            title: "NEXT_PUBLIC_API_URL",
+            variant: "public",
+            route: "",
+          },
+        ]}
+      />
     </main>
   );
 }
