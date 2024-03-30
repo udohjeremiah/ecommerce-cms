@@ -4,10 +4,10 @@ import { useState } from "react";
 
 import { useParams, useRouter } from "next/navigation";
 
-import { Store } from "@prisma/client";
 import { LoaderCircleIcon, TrashIcon, TriangleAlertIcon } from "lucide-react";
 import { toast } from "sonner";
 
+import { BillboardColumn } from "@/components/BillboardColumns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -24,30 +24,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { cn } from "@/lib/utils";
-
-interface DeleteDialogProps {
-  store: Store;
+interface DeleteBillboardDialogProps {
+  billboard: BillboardColumn;
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link"
+    | null
+    | undefined;
+  triggerBtnClassName: string;
 }
 
-export default function DeleteStoreDialog({ store }: DeleteDialogProps) {
-  const [openDeleteDialog, setopenDeleteDialog] = useState(false);
-  const [storeName, setStoreName] = useState("");
+export default function DeleteBillboardDialog({
+  billboard,
+  variant = "destructive",
+  triggerBtnClassName,
+}: DeleteBillboardDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [billboardLabel, setBillboardLabel] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const params = useParams();
   const router = useRouter();
 
-  const onStoreDelete = async () => {
+  const onBillboardDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await fetch(`/api/stores/${params.storeId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+      const response = await fetch(
+        `/api/${params.storeId}/billboards/${billboard.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -55,28 +70,31 @@ export default function DeleteStoreDialog({ store }: DeleteDialogProps) {
 
       const { store } = await response.json();
       setIsDeleting(false);
-      router.push("/");
-      toast.success(`🎉 ${store.name} store deleted successfully.`);
+      router.refresh();
+      toast.success(
+        `🙂 Billboard for the ${store.name} store deleted successfully.`,
+      );
     } catch (error) {
       console.error(error);
+      setIsDeleting(false);
       toast.error("💔 Something went wrong.");
     }
   };
 
   return (
     <AlertDialog
-      open={openDeleteDialog}
+      open={open}
       onOpenChange={(open) => {
         if (!open) {
-          setStoreName("");
+          setBillboardLabel("");
         }
-        setopenDeleteDialog(open);
+        setOpen(open);
       }}
     >
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" className={cn("ml-auto w-max", "ml-0")}>
+        <Button variant={variant} className={triggerBtnClassName}>
           <TrashIcon className="mr-2 h-4 w-4" />
-          Delete Store
+          Delete Billboard
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -90,35 +108,38 @@ export default function DeleteStoreDialog({ store }: DeleteDialogProps) {
             </AlertDescription>
           </Alert>
           <AlertDialogDescription>
-            This action cannot be undone. It will permanently delete this store
-            and remove all associated data from our servers.
+            This action cannot be undone. It will permanently delete this
+            billboard and remove all associated data from our servers. Please
+            ensure that you remove all categories associated with this
+            billboard.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
             <Label htmlFor="storeName" className="select-none">
-              To confirm, type &quot;{store.name}&quot; in the input field below
+              To confirm, type &quot;{billboard.label}&quot; in the input field
+              below
             </Label>
             <Input
               id="storeName"
               disabled={isDeleting}
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
+              value={billboardLabel}
+              onChange={(e) => setBillboardLabel(e.target.value)}
             />
           </div>
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            disabled={storeName !== store.name || isDeleting}
+            disabled={billboardLabel !== billboard.label || isDeleting}
             onClick={(e) => {
               e.preventDefault();
-              onStoreDelete();
+              onBillboardDelete();
             }}
           >
             {isDeleting ? (
               <>
-                <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
                 Deleting
               </>
             ) : (
