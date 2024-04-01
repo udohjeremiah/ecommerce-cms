@@ -31,7 +31,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@tanstack/react-table": "^8.15.3",
     "class-variance-authority": "^0.7.0",
-    "cloudinary": "^2.0.3",
+    "cloudinary": "^2.1.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
