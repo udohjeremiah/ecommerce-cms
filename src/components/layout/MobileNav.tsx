@@ -43,7 +43,7 @@ export default function MobileNav() {
             href="/"
             onClick={() => setOpen(false)}
             className={cn(
-              "flex items-center gap-2 text-lg font-bold",
+              "flex w-max items-center gap-2 text-lg font-bold",
               "md:text-base",
             )}
           >
@@ -58,7 +58,7 @@ export default function MobileNav() {
               href={`/${params.storeId}/${href}`}
               onClick={() => setOpen(false)}
               className={cn(
-                "text-muted-foreground transition-colors",
+                "w-max text-muted-foreground transition-colors",
                 "hover:text-foreground",
                 active(pathName, `/${params.storeId}${href && `/${href}`}`) &&
                   "text-foreground",

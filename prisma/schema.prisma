@@ -25,6 +25,7 @@ model Store {
   Size      Size[]
   Color     Color[]
   Product   Product[]
+  Order     Order[]
 }
 
 model Billboard {
@@ -73,22 +74,23 @@ model Color {
 }
 
 model Product {
-  id         String   @id @default(uuid())
+  id         String      @id @default(uuid())
   storeId    String
   categoryId String
   sizeId     String
   colorId    String
   name       String
   price      Decimal
-  isFeatured Boolean  @default(false)
-  isArchived Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Store      Store    @relation(fields: [storeId], references: [id])
-  Category   Category @relation(fields: [categoryId], references: [id])
-  Size       Size     @relation(fields: [sizeId], references: [id])
-  Color      Color    @relation(fields: [colorId], references: [id])
+  isFeatured Boolean     @default(false)
+  isArchived Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  Store      Store       @relation(fields: [storeId], references: [id])
+  Category   Category    @relation(fields: [categoryId], references: [id])
+  Size       Size        @relation(fields: [sizeId], references: [id])
+  Color      Color       @relation(fields: [colorId], references: [id])
   Image      Image[]
+  OrderItem  OrderItem[]
 }
 
 model Image {
@@ -98,4 +100,24 @@ model Image {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   Product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  storeId   String
+  isPaid    Boolean     @default(false)
+  phone     String      @default("")
+  address   String      @default("")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  Store     Store       @relation(fields: [storeId], references: [id])
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  Order     Order   @relation(fields: [orderId], references: [id])
+  Product   Product @relation(fields: [productId], references: [id])
 }
