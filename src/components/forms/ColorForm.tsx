@@ -7,7 +7,7 @@ import { Color } from "@prisma/client";
 import { LoaderCircleIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { ZodType, z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -76,37 +76,9 @@ export default function ColorForm({ color }: ColorFormProps) {
     },
   });
 
-  const onNameSubmit = async (values: z.infer<typeof nameFormSchema>) => {
-    try {
-      const response = await fetch(
-        `/api/${params.storeId}/colors/${params.colorId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(values),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const { store } = await response.json();
-      router.refresh();
-      toast.success(
-        `🎉 ${color.name} color for the ${store.name} store updated successfully.`,
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error("💔 Something went wrong.");
-    }
-  };
-
-  const onValueSubmit = async (values: z.infer<typeof valueFormSchema>) => {
-    console.log(values);
+  const onSubmit = async <T extends ZodType<any, any, any>>(
+    values: z.infer<T>,
+  ) => {
     try {
       const response = await fetch(
         `/api/${params.storeId}/colors/${params.colorId}`,
@@ -137,7 +109,7 @@ export default function ColorForm({ color }: ColorFormProps) {
 
   return (
     <div className={cn("grid gap-6", "lg:grid-cols-2")}>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Color Name</CardTitle>
           <CardDescription>
@@ -172,7 +144,7 @@ export default function ColorForm({ color }: ColorFormProps) {
           <Button
             type="submit"
             disabled={nameForm.formState.isSubmitting}
-            onClick={nameForm.handleSubmit(onNameSubmit)}
+            onClick={nameForm.handleSubmit(onSubmit<typeof nameFormSchema>)}
           >
             {nameForm.formState.isSubmitting ? (
               <>
@@ -185,7 +157,7 @@ export default function ColorForm({ color }: ColorFormProps) {
           </Button>
         </CardFooter>
       </Card>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Color Value</CardTitle>
           <CardDescription>
@@ -226,7 +198,7 @@ export default function ColorForm({ color }: ColorFormProps) {
           <Button
             type="submit"
             disabled={valueForm.formState.isSubmitting}
-            onClick={valueForm.handleSubmit(onValueSubmit)}
+            onClick={valueForm.handleSubmit(onSubmit<typeof valueFormSchema>)}
           >
             {valueForm.formState.isSubmitting ? (
               <>

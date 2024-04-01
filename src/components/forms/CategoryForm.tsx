@@ -7,7 +7,7 @@ import { Billboard, Category } from "@prisma/client";
 import { LoaderCircleIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { ZodType, z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,8 +37,8 @@ import {
 import { cn } from "@/lib/utils";
 
 interface CategoryFormProps {
-  billboards: Billboard[];
   category: Category;
+  billboards: Billboard[];
 }
 
 const nameFormSchema = z.object({
@@ -73,43 +73,14 @@ export default function CategoryForm({
   });
 
   const billboardIdForm = useForm<z.infer<typeof billboardIdFormSchema>>({
-    resolver: zodResolver(nameFormSchema),
+    resolver: zodResolver(billboardIdFormSchema),
     defaultValues: {
       billboardId: category.billboardId,
     },
   });
 
-  const onNameSubmit = async (values: z.infer<typeof nameFormSchema>) => {
-    try {
-      const response = await fetch(
-        `/api/${params.storeId}/categories/${params.categoryId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(values),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const { store } = await response.json();
-      router.refresh();
-      toast.success(
-        `🎉 ${category.name} category for the ${store.name} store updated successfully.`,
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error("💔 Something went wrong.");
-    }
-  };
-
-  const onBillboardIdSubmit = async (
-    values: z.infer<typeof billboardIdFormSchema>,
+  const onSubmit = async <T extends ZodType<any, any, any>>(
+    values: z.infer<T>,
   ) => {
     try {
       const response = await fetch(
@@ -141,7 +112,7 @@ export default function CategoryForm({
 
   return (
     <div className={cn("grid gap-6", "lg:grid-cols-2")}>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Category Name</CardTitle>
           <CardDescription>
@@ -176,7 +147,7 @@ export default function CategoryForm({
           <Button
             type="submit"
             disabled={nameForm.formState.isSubmitting}
-            onClick={nameForm.handleSubmit(onNameSubmit)}
+            onClick={nameForm.handleSubmit(onSubmit<typeof nameFormSchema>)}
           >
             {nameForm.formState.isSubmitting ? (
               <>
@@ -189,7 +160,7 @@ export default function CategoryForm({
           </Button>
         </CardFooter>
       </Card>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Billboard ID</CardTitle>
           <CardDescription>
@@ -235,7 +206,9 @@ export default function CategoryForm({
           <Button
             type="submit"
             disabled={billboardIdForm.formState.isSubmitting}
-            onClick={billboardIdForm.handleSubmit(onBillboardIdSubmit)}
+            onClick={billboardIdForm.handleSubmit(
+              onSubmit<typeof billboardIdFormSchema>,
+            )}
           >
             {billboardIdForm.formState.isSubmitting ? (
               <>

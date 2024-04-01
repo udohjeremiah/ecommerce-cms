@@ -109,19 +109,19 @@ export default function DeleteBillboardDialog({
           </Alert>
           <AlertDialogDescription>
             This action cannot be undone. It will permanently delete this
-            category and remove all associated data from our servers. Please
+            billboard and remove all associated data from our servers. Please
             ensure that you remove all categories associated with this billboard
             before proceeding.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="storeName" className="select-none">
+            <Label htmlFor="billboardLabel" className="select-none">
               To confirm, type &quot;{billboard.label}&quot; in the input field
               below
             </Label>
             <Input
-              id="storeName"
+              id="billboardLabel"
               disabled={isDeleting}
               value={billboardLabel}
               onChange={(e) => setBillboardLabel(e.target.value)}

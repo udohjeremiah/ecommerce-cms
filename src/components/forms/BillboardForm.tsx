@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useParams, useRouter } from "next/navigation";
 
@@ -8,10 +8,14 @@ import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Billboard } from "@prisma/client";
 import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
-import { CldImage, CldUploadButton } from "next-cloudinary";
+import {
+  CldImage,
+  CldUploadButton,
+  CloudinaryUploadWidgetInfo,
+} from "next-cloudinary";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { ZodType, z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,9 +52,14 @@ const labelFormSchema = z.object({
     }),
 });
 
+const imageFormSchema = z.object({
+  imagePublicId: z.string().min(1, {
+    message: "Billboard must have a background image.",
+  }),
+});
+
 export default function BillboardForm({ billboard }: BillboardFormProps) {
   const [imagePublicId, setImagePublicId] = useState(billboard.imagePublicId);
-  const [isSaving, setIsSaving] = useState(false);
 
   const params = useParams();
   const router = useRouter();
@@ -62,9 +71,22 @@ export default function BillboardForm({ billboard }: BillboardFormProps) {
     },
   });
 
+  const imageForm = useForm<z.infer<typeof imageFormSchema>>({
+    resolver: zodResolver(imageFormSchema),
+    defaultValues: {
+      imagePublicId: billboard.imagePublicId,
+    },
+  });
+
   const { user } = useUser();
 
-  const onLabelSubmit = async (values: z.infer<typeof labelFormSchema>) => {
+  useEffect(() => {
+    imageForm.setValue("imagePublicId", imagePublicId);
+  }, [imageForm, imagePublicId]);
+
+  const onSubmit = async <T extends ZodType<any, any, any>>(
+    values: z.infer<T>,
+  ) => {
     try {
       const response = await fetch(
         `/api/${params.storeId}/billboards/${params.billboardId}`,
@@ -93,40 +115,9 @@ export default function BillboardForm({ billboard }: BillboardFormProps) {
     }
   };
 
-  const onImageSubmit = async () => {
-    try {
-      setIsSaving(true);
-      const response = await fetch(
-        `/api/${params.storeId}/billboards/${params.billboardId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ imagePublicId }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const { store } = await response.json();
-      setIsSaving(false);
-      router.refresh();
-      toast.success(
-        `🎉 Billboard for the ${store.name} store updated successfully.`,
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error("💔 Something went wrong.");
-    }
-  };
-
   return (
     <div className={cn("grid gap-6", "lg:grid-cols-2")}>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Label</CardTitle>
           <CardDescription>
@@ -161,7 +152,7 @@ export default function BillboardForm({ billboard }: BillboardFormProps) {
           <Button
             type="submit"
             disabled={labelForm.formState.isSubmitting}
-            onClick={labelForm.handleSubmit(onLabelSubmit)}
+            onClick={labelForm.handleSubmit(onSubmit<typeof labelFormSchema>)}
           >
             {labelForm.formState.isSubmitting ? (
               <>
@@ -174,7 +165,7 @@ export default function BillboardForm({ billboard }: BillboardFormProps) {
           </Button>
         </CardFooter>
       </Card>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Background Image</CardTitle>
           <CardDescription>
@@ -191,22 +182,38 @@ export default function BillboardForm({ billboard }: BillboardFormProps) {
           />
         </CardContent>
         <CardFooter className="space-x-4 border-t px-6 py-4">
-          <Button asChild variant="secondary" type="button" disabled={isSaving}>
-            <CldUploadButton
-              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-              options={{ folder: `ecommerce-cms/${user?.id}/billboard` }}
-              onSuccess={(results) => {
-                if (typeof results?.info === "object") {
-                  setImagePublicId(results.info.public_id);
-                }
-              }}
-              className="flex items-center"
+          {user?.id && (
+            <Button
+              asChild
+              variant="secondary"
+              type="button"
+              disabled={imageForm.formState.isSubmitting}
             >
-              <ImageUpIcon className="mr-2 h-4 w-4" /> Change
-            </CldUploadButton>
-          </Button>
-          <Button type="submit" disabled={isSaving} onClick={onImageSubmit}>
-            {isSaving ? (
+              <CldUploadButton
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                options={{ folder: `ecommerce-cms/${user.id}/billboard` }}
+                onUploadAdded={() => setImagePublicId("")}
+                onSuccess={(results) => {
+                  if (typeof results?.info === "object") {
+                    setImagePublicId(results.info.public_id);
+                  }
+                  if (typeof results?.info === "object") {
+                    const info = results.info as CloudinaryUploadWidgetInfo;
+                    setImagePublicId(info.public_id);
+                  }
+                }}
+                className="flex items-center"
+              >
+                <ImageUpIcon className="mr-2 h-4 w-4" /> Change
+              </CldUploadButton>
+            </Button>
+          )}
+          <Button
+            type="submit"
+            disabled={imageForm.formState.isSubmitting}
+            onClick={imageForm.handleSubmit(onSubmit<typeof imageFormSchema>)}
+          >
+            {imageForm.formState.isSubmitting ? (
               <>
                 <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
                 Saving
