@@ -7,7 +7,7 @@ import { Store } from "@prisma/client";
 import { LoaderCircleIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { ZodType, z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -55,8 +55,8 @@ export default function SettingsForm({ store }: SettingsFormProps) {
     },
   });
 
-  const onStoreNameSubmit = async (
-    values: z.infer<typeof storeNameFormSchema>,
+  const onSubmit = async <T extends ZodType<any, any, any>>(
+    values: z.infer<T>,
   ) => {
     try {
       const response = await fetch(`/api/stores/${params.storeId}`, {
@@ -83,7 +83,7 @@ export default function SettingsForm({ store }: SettingsFormProps) {
 
   return (
     <div className={cn("grid gap-6", "lg:grid-cols-2")}>
-      <Card className="h-max">
+      <Card>
         <CardHeader>
           <CardTitle>Store Name</CardTitle>
           <CardDescription>
@@ -118,7 +118,9 @@ export default function SettingsForm({ store }: SettingsFormProps) {
           <Button
             type="submit"
             disabled={storeNameForm.formState.isSubmitting}
-            onClick={storeNameForm.handleSubmit(onStoreNameSubmit)}
+            onClick={storeNameForm.handleSubmit(
+              onSubmit<typeof storeNameFormSchema>,
+            )}
           >
             {storeNameForm.formState.isSubmitting ? (
               <>

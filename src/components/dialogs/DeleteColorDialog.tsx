@@ -116,11 +116,11 @@ export default function DeleteColorDialog({
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="storeName" className="select-none">
+            <Label htmlFor="colorName" className="select-none">
               To confirm, type &quot;{color.name}&quot; in the input field below
             </Label>
             <Input
-              id="storeName"
+              id="colorName"
               disabled={isDeleting}
               value={colorName}
               onChange={(e) => setColorName(e.target.value)}

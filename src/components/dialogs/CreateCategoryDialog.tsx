@@ -184,7 +184,11 @@ export default function CreateCategoryDialog({
         </Form>
         <DialogFooter className="gap-2">
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={form.formState.isSubmitting}
+            >
               Cancel
             </Button>
           </DialogClose>

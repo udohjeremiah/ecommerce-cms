@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { LoaderCircleIcon, TrashIcon, TriangleAlertIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { CategoryColumn } from "@/components/columns/CategoryColumns";
+import { ProductColumn } from "@/components/columns/ProductColumns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -24,8 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface DeleteCategoryDialogProps {
-  category: CategoryColumn;
+interface DeleteProductDialogProps {
+  product: ProductColumn;
   variant?:
     | "default"
     | "destructive"
@@ -38,23 +38,23 @@ interface DeleteCategoryDialogProps {
   triggerBtnClassName: string;
 }
 
-export default function DeleteCategoryDialog({
-  category,
+export default function DeleteProductDialog({
+  product,
   variant = "destructive",
   triggerBtnClassName,
-}: DeleteCategoryDialogProps) {
+}: DeleteProductDialogProps) {
   const [open, setOpen] = useState(false);
-  const [categoryName, setCategoryName] = useState("");
+  const [productName, setProductName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const params = useParams();
   const router = useRouter();
 
-  const onBillboardDelete = async () => {
+  const onProductDelete = async () => {
     try {
       setIsDeleting(true);
       const response = await fetch(
-        `/api/${params.storeId}/categories/${category.id}`,
+        `/api/${params.storeId}/products/${product.id}`,
         {
           method: "DELETE",
           headers: {
@@ -72,7 +72,7 @@ export default function DeleteCategoryDialog({
       setIsDeleting(false);
       router.refresh();
       toast.success(
-        `🙂 ${category.name} category for the ${store.name} store deleted successfully.`,
+        `🙂 ${product.name} product for the ${store.name} store deleted successfully.`,
       );
     } catch (error) {
       console.error(error);
@@ -86,7 +86,7 @@ export default function DeleteCategoryDialog({
       open={open}
       onOpenChange={(open) => {
         if (!open) {
-          setCategoryName("");
+          setProductName("");
         }
         setOpen(open);
       }}
@@ -94,7 +94,7 @@ export default function DeleteCategoryDialog({
       <AlertDialogTrigger asChild>
         <Button variant={variant} className={triggerBtnClassName}>
           <TrashIcon className="mr-2 h-4 w-4" />
-          Delete Category
+          Delete Product
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -109,32 +109,32 @@ export default function DeleteCategoryDialog({
           </Alert>
           <AlertDialogDescription>
             This action cannot be undone. It will permanently delete this
-            category and remove all associated data from our servers. Please
-            ensure that you remove all products associated with this category
+            product and remove all associated data from our servers. Please
+            ensure that you remove all categories associated with this product
             before proceeding.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="categoryName" className="select-none">
-              To confirm, type &quot;{category.name}&quot; in the input field
+            <Label htmlFor="storeName" className="select-none">
+              To confirm, type &quot;{product.name}&quot; in the input field
               below
             </Label>
             <Input
-              id="categoryName"
+              id="storeName"
               disabled={isDeleting}
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
             />
           </div>
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            disabled={categoryName !== category.name || isDeleting}
+            disabled={productName !== product.name || isDeleting}
             onClick={(e) => {
               e.preventDefault();
-              onBillboardDelete();
+              onProductDelete();
             }}
           >
             {isDeleting ? (

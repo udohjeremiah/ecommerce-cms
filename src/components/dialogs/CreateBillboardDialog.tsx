@@ -45,7 +45,7 @@ const formSchema = z.object({
     }),
   image: z
     .any()
-    .refine((file) => file?.length !== 0, "Background image is required"),
+    .refine((file) => file?.length !== 0, "Background image is required."),
 });
 
 interface CreateBillboardDialogProps {
@@ -190,7 +190,11 @@ export default function CreateBillboardDialog({
         </Form>
         <DialogFooter className="gap-2">
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={form.formState.isSubmitting}
+            >
               Cancel
             </Button>
           </DialogClose>

@@ -112,11 +112,11 @@ export default function DeleteSizeDialog({
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="storeName" className="select-none">
+            <Label htmlFor="sizeName" className="select-none">
               To confirm, type &quot;{size.name}&quot; in the input field below
             </Label>
             <Input
-              id="storeName"
+              id="sizeName"
               disabled={isDeleting}
               value={sizeName}
               onChange={(e) => setSizeName(e.target.value)}
