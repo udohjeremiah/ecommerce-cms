@@ -30,6 +30,11 @@ export const routes = [
     active: (pathName: string, route: string) => pathName.startsWith(route),
   },
   {
+    href: "orders",
+    label: "Orders",
+    active: (pathName: string, route: string) => pathName.startsWith(route),
+  },
+  {
     href: "settings",
     label: "Settings",
     active: (pathName: string, route: string) => pathName.startsWith(route),
