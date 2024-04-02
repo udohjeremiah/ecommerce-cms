@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { useParams, useRouter } from "next/navigation";
 
@@ -11,7 +11,6 @@ import { BillboardColumn } from "@/components/columns/BillboardColumns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -25,30 +24,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface DeleteBillboardDialogProps {
+  defaultState?: boolean;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
   billboard: BillboardColumn;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | null
-    | undefined;
-  triggerBtnClassName: string;
 }
 
 export default function DeleteBillboardDialog({
+  defaultState = false,
+  open,
+  setOpen,
   billboard,
-  variant = "destructive",
-  triggerBtnClassName,
 }: DeleteBillboardDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [defaultOpen, setDefaultOpen] = useState(false);
   const [billboardLabel, setBillboardLabel] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const params = useParams();
   const router = useRouter();
+
+  if (defaultState) {
+    open = defaultOpen;
+    setOpen = setDefaultOpen;
+  }
 
   const onBillboardDelete = async () => {
     try {
@@ -88,15 +86,17 @@ export default function DeleteBillboardDialog({
         if (!open) {
           setBillboardLabel("");
         }
-        setOpen(open);
+        setOpen?.(open);
       }}
     >
-      <AlertDialogTrigger asChild>
-        <Button variant={variant} className={triggerBtnClassName}>
-          <TrashIcon className="mr-2 h-4 w-4" />
-          Delete Billboard
-        </Button>
-      </AlertDialogTrigger>
+      {defaultState && (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="w-max">
+            <TrashIcon className="mr-2 h-4 w-4" />
+            Delete Billboard
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -130,12 +130,10 @@ export default function DeleteBillboardDialog({
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="destructive"
             disabled={billboardLabel !== billboard.label || isDeleting}
-            onClick={(e) => {
-              e.preventDefault();
-              onBillboardDelete();
-            }}
+            onClick={onBillboardDelete}
           >
             {isDeleting ? (
               <>
@@ -143,9 +141,9 @@ export default function DeleteBillboardDialog({
                 Deleting
               </>
             ) : (
-              "Continue"
+              "Delete"
             )}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

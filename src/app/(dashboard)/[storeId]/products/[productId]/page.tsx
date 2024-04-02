@@ -102,6 +102,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           description={`Manage this product for your ${store?.name} store.`}
         />
         <DeleteProductDialog
+          defaultState={true}
           product={{
             id: product.id,
             name: product.name,
@@ -116,7 +117,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             color: product.Color.value,
             createdAt: format(product.createdAt, "MMMM do, yyyy"),
           }}
-          triggerBtnClassName="w-max"
         />
       </div>
       <Separator />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { useParams, useRouter } from "next/navigation";
 
@@ -11,7 +11,6 @@ import { ColorColumn } from "@/components/columns/ColorColumns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -25,30 +24,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface DeleteColorDialogProps {
+  defaultState?: boolean;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
   color: ColorColumn;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | null
-    | undefined;
-  triggerBtnClassName: string;
 }
 
 export default function DeleteColorDialog({
+  defaultState = false,
+  open,
+  setOpen,
   color,
-  variant = "destructive",
-  triggerBtnClassName,
 }: DeleteColorDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [defaultOpen, setDefaultOpen] = useState(false);
   const [colorName, setColorName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const params = useParams();
   const router = useRouter();
+
+  if (defaultState) {
+    open = defaultOpen;
+    setOpen = setDefaultOpen;
+  }
 
   const onColorDelete = async () => {
     try {
@@ -88,15 +86,17 @@ export default function DeleteColorDialog({
         if (!open) {
           setColorName("");
         }
-        setOpen(open);
+        setOpen?.(open);
       }}
     >
-      <AlertDialogTrigger asChild>
-        <Button variant={variant} className={triggerBtnClassName}>
-          <TrashIcon className="mr-2 h-4 w-4" />
-          Delete Color
-        </Button>
-      </AlertDialogTrigger>
+      {defaultState && (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="w-max">
+            <TrashIcon className="mr-2 h-4 w-4" />
+            Delete Color
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -129,12 +129,10 @@ export default function DeleteColorDialog({
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="destructive"
             disabled={colorName !== color.name || isDeleting}
-            onClick={(e) => {
-              e.preventDefault();
-              onColorDelete();
-            }}
+            onClick={onColorDelete}
           >
             {isDeleting ? (
               <>
@@ -142,9 +140,9 @@ export default function DeleteColorDialog({
                 Deleting
               </>
             ) : (
-              "Continue"
+              "Delete"
             )}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -90,7 +89,9 @@ export default function DeleteStoreDialog({ store }: DeleteStoreDialogProps) {
           </Alert>
           <AlertDialogDescription>
             This action cannot be undone. It will permanently delete this store
-            and remove all associated data from our servers.
+            and remove all associated data from our servers. Please ensure that
+            you remove all billboards, categories, sizes, colors and products
+            associated this store before proceeding.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
@@ -108,12 +109,10 @@ export default function DeleteStoreDialog({ store }: DeleteStoreDialogProps) {
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="destructive"
             disabled={storeName !== store.name || isDeleting}
-            onClick={(e) => {
-              e.preventDefault();
-              onStoreDelete();
-            }}
+            onClick={onStoreDelete}
           >
             {isDeleting ? (
               <>
@@ -121,9 +120,9 @@ export default function DeleteStoreDialog({ store }: DeleteStoreDialogProps) {
                 Deleting
               </>
             ) : (
-              "Continue"
+              "Delete"
             )}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

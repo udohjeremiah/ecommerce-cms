@@ -80,23 +80,23 @@ export default async function ColorPage({ params }: ColorPageProps) {
         )}
       >
         <Heading
-          title={`${store?.name} Store Billboard`}
-          description={`Manage this billboard for your ${store?.name} store.`}
+          title={`${store?.name} Store Color`}
+          description={`Manage this color for your ${store?.name} store.`}
         />
         <DeleteColorDialog
+          defaultState={true}
           color={{
             id: color.id,
             name: color.name,
             value: color.value,
             createdAt: format(color.createdAt, "MMMM do, yyyy"),
           }}
-          triggerBtnClassName="w-max"
         />
       </div>
       <Separator />
       <ColorForm color={color} />
       <Separator />
-      <Heading title="API" description="API calls for billboard" />
+      <Heading title="API" description="API calls for colors" />
       <APIList
         apis={[
           {

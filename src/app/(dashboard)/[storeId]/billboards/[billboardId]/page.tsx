@@ -80,12 +80,12 @@ export default async function BillboardPage({ params }: BillboardPageProps) {
           description={`Manage this billboard for your ${store?.name} store.`}
         />
         <DeleteBillboardDialog
+          defaultState={true}
           billboard={{
             id: billboard.id,
             label: billboard.label,
             createdAt: format(billboard.createdAt, "MMMM do, yyyy"),
           }}
-          triggerBtnClassName="w-max"
         />
       </div>
       <Separator />

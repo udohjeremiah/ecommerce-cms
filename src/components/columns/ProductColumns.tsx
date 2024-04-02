@@ -1,9 +1,17 @@
 "use client";
 
+import { useState } from "react";
+
 import { useParams, useRouter } from "next/navigation";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, CopyIcon, EditIcon, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  CopyIcon,
+  EditIcon,
+  MoreHorizontal,
+  TrashIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import DeleteProductDialog from "@/components/dialogs/DeleteProductDialog";
@@ -129,50 +137,57 @@ export const columns: ColumnDef<ProductColumn>[] = [
 ];
 
 export function ProductCellActions({ row }: { row: ProductColumn }) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const params = useParams();
   const router = useRouter();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <MoreHorizontal className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <div className="space-y-1">
-          <DropdownMenuItem
-            asChild
-            onClick={() => {
-              navigator.clipboard.writeText(row.id);
-              toast.success("✅ Product ID copied successfully.");
-            }}
-          >
-            <Button variant="ghost" className="w-full justify-start">
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <div className="space-y-1">
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(row.id);
+                toast.success("✅ Product ID copied successfully.");
+              }}
+            >
               <CopyIcon className="mr-2 h-4 w-4" />
               Copy ID
-            </Button>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            asChild
-            onClick={() => router.push(`/${params.storeId}/products/${row.id}`)}
-          >
-            <Button variant="ghost" className="w-full justify-start">
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(`/${params.storeId}/products/${row.id}`)
+              }
+            >
               <EditIcon className="mr-2 h-4 w-4" />
               Update Product
-            </Button>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <DeleteProductDialog
-              product={row}
-              variant="ghost"
-              triggerBtnClassName="w-full justify-start px-2 py-1.5 cursor-default"
-            />
-          </DropdownMenuItem>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => setShowDeleteDialog(true)}
+              className="text-destructive"
+            >
+              <TrashIcon className="mr-2 h-4 w-4" />
+              Delete Product
+            </DropdownMenuItem>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {showDeleteDialog && (
+        <DeleteProductDialog
+          open={showDeleteDialog}
+          setOpen={setShowDeleteDialog}
+          product={row}
+        />
+      )}
+    </>
   );
 }

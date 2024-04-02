@@ -89,13 +89,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           description={`Manage the ${category.name} category for your ${store?.name} store.`}
         />
         <DeleteCategoryDialog
+          defaultState={true}
           category={{
             id: category.id,
             name: category.name,
             billboardLabel: category.Billboard.label,
             createdAt: format(category.createdAt, "MMMM do, yyyy"),
           }}
-          triggerBtnClassName="w-max"
         />
       </div>
       <Separator />

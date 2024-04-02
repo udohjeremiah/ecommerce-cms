@@ -6,7 +6,6 @@ import "@/styles/globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
 
-import CreateStoreProvider from "@/providers/CreateStoreProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
 
 interface RootLayoutProps {
@@ -30,10 +29,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             enableSystem
             disableTransitionOnChange
           >
-            <CreateStoreProvider>
-              {children}
-              <Toaster closeButton richColors />
-            </CreateStoreProvider>
+            {children}
+            <Toaster closeButton richColors />
           </ThemeProvider>
         </body>
       </html>

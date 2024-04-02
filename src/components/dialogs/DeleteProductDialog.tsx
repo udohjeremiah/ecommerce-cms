@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { useParams, useRouter } from "next/navigation";
 
@@ -11,7 +11,6 @@ import { ProductColumn } from "@/components/columns/ProductColumns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -25,30 +24,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface DeleteProductDialogProps {
+  defaultState?: boolean;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
   product: ProductColumn;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | null
-    | undefined;
-  triggerBtnClassName: string;
 }
 
 export default function DeleteProductDialog({
+  defaultState = false,
+  open,
+  setOpen,
   product,
-  variant = "destructive",
-  triggerBtnClassName,
 }: DeleteProductDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [defaultOpen, setDefaultOpen] = useState(false);
   const [productName, setProductName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const params = useParams();
   const router = useRouter();
+
+  if (defaultState) {
+    open = defaultOpen;
+    setOpen = setDefaultOpen;
+  }
 
   const onProductDelete = async () => {
     try {
@@ -88,15 +86,17 @@ export default function DeleteProductDialog({
         if (!open) {
           setProductName("");
         }
-        setOpen(open);
+        setOpen?.(open);
       }}
     >
-      <AlertDialogTrigger asChild>
-        <Button variant={variant} className={triggerBtnClassName}>
-          <TrashIcon className="mr-2 h-4 w-4" />
-          Delete Product
-        </Button>
-      </AlertDialogTrigger>
+      {defaultState && (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="w-max">
+            <TrashIcon className="mr-2 h-4 w-4" />
+            Delete Product
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -130,12 +130,10 @@ export default function DeleteProductDialog({
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="destructive"
             disabled={productName !== product.name || isDeleting}
-            onClick={(e) => {
-              e.preventDefault();
-              onProductDelete();
-            }}
+            onClick={onProductDelete}
           >
             {isDeleting ? (
               <>
@@ -143,9 +141,9 @@ export default function DeleteProductDialog({
                 Deleting
               </>
             ) : (
-              "Continue"
+              "Delete"
             )}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
