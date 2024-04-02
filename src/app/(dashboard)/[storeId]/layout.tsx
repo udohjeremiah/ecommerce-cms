@@ -4,14 +4,12 @@ import { auth, ClerkProvider } from "@clerk/nextjs";
 
 import "@/styles/globals.css";
 
-import CreateStoreDialog from "@/components/dialogs/CreateStoreDialog";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner";
 
 import prisma from "@/lib/prisma";
 
-import CreateStoreProvider from "@/providers/CreateStoreProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
 
 interface DashboardLayoutProps {
@@ -47,13 +45,10 @@ export default async function DashboardLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <CreateStoreProvider>
-              <Header />
-              {children}
-              <Footer />
-              <CreateStoreDialog />
-              <Toaster closeButton richColors />
-            </CreateStoreProvider>
+            <Header />
+            {children}
+            <Footer />
+            <Toaster closeButton richColors />
           </ThemeProvider>
         </body>
       </html>

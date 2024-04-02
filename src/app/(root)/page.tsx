@@ -19,5 +19,5 @@ export default async function RootPage() {
     redirect(`/${store.id}`);
   }
 
-  return <CreateStoreDialog initialState={true} />;
+  return <CreateStoreDialog defaultState={true} />;
 }

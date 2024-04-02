@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -31,8 +31,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useCreateStore } from "@/hooks/use-create-store";
-
 const formSchema = z.object({
   name: z
     .string()
@@ -45,12 +43,18 @@ const formSchema = z.object({
 });
 
 interface CreateStoreDialogProps {
-  initialState?: boolean;
+  defaultState?: boolean;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CreateStoreDialog({
-  initialState = false,
+  defaultState = false,
+  open,
+  setOpen,
 }: CreateStoreDialogProps) {
+  const [defaultOpen, setDefaultOpen] = useState(false);
+
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,11 +64,14 @@ export default function CreateStoreDialog({
     },
   });
 
-  const { createStore, setCreateStore } = useCreateStore();
+  if (defaultState) {
+    open = defaultOpen;
+    setOpen = setDefaultOpen;
+  }
 
   useEffect(() => {
-    if (initialState) {
-      setCreateStore(true);
+    if (defaultState) {
+      setOpen?.(true);
     }
   });
 
@@ -94,12 +101,15 @@ export default function CreateStoreDialog({
 
   return (
     <Dialog
-      open={createStore}
+      open={open}
       onOpenChange={(open) => {
         if (!open) {
           form.reset();
         }
-        setCreateStore(open);
+        if (!open && defaultOpen) {
+          router.refresh();
+        }
+        setOpen?.(open);
       }}
     >
       <DialogContent className="sm:max-w-md">

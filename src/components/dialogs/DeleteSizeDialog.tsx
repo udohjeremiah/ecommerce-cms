@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { useParams, useRouter } from "next/navigation";
 
@@ -11,7 +11,6 @@ import { SizeColumn } from "@/components/columns/SizeColumns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -25,30 +24,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface DeleteSizeDialogProps {
+  defaultState?: boolean;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
   size: SizeColumn;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | null
-    | undefined;
-  triggerBtnClassName: string;
 }
 
 export default function DeleteSizeDialog({
+  defaultState = false,
+  open,
+  setOpen,
   size,
-  variant = "destructive",
-  triggerBtnClassName,
 }: DeleteSizeDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [defaultOpen, setDefaultOpen] = useState(false);
   const [sizeName, setSizeName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const params = useParams();
   const router = useRouter();
+
+  if (defaultState) {
+    open = defaultOpen;
+    setOpen = setDefaultOpen;
+  }
 
   const onSizeDelete = async () => {
     try {
@@ -85,15 +83,17 @@ export default function DeleteSizeDialog({
         if (!open) {
           setSizeName("");
         }
-        setOpen(open);
+        setOpen?.(open);
       }}
     >
-      <AlertDialogTrigger asChild>
-        <Button variant={variant} className={triggerBtnClassName}>
-          <TrashIcon className="mr-2 h-4 w-4" />
-          Delete Size
-        </Button>
-      </AlertDialogTrigger>
+      {defaultState && (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="w-max">
+            <TrashIcon className="mr-2 h-4 w-4" />
+            Delete Size
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -125,12 +125,10 @@ export default function DeleteSizeDialog({
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="destructive"
             disabled={sizeName !== size.name || isDeleting}
-            onClick={(e) => {
-              e.preventDefault();
-              onSizeDelete();
-            }}
+            onClick={onSizeDelete}
           >
             {isDeleting ? (
               <>
@@ -138,9 +136,9 @@ export default function DeleteSizeDialog({
                 Deleting
               </>
             ) : (
-              "Continue"
+              "Delete"
             )}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

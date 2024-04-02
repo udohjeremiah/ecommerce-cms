@@ -12,6 +12,7 @@ import {
   StoreIcon,
 } from "lucide-react";
 
+import CreateStoreDialog from "@/components/dialogs/CreateStoreDialog";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -28,8 +29,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { useCreateStore } from "@/hooks/use-create-store";
-
 interface StoreSwitcherProps {
   stores: Store[];
 }
@@ -37,74 +36,81 @@ interface StoreSwitcherProps {
 export default function StoreSwitcher({ stores = [] }: StoreSwitcherProps) {
   const params = useParams();
 
-  const [open, setOpen] = useState(false);
   const [currentStore, setCurrentStore] = useState(
     stores.find((store) => store.id === params.storeId)?.id,
   );
+  const [open, setOpen] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const router = useRouter();
 
-  const { setCreateStore } = useCreateStore();
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-label="Select a store"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          <StoreIcon className="mr-2 h-4 w-4" />
-          {currentStore
-            ? stores.find((store) => store.id === currentStore)?.name
-            : "Select store..."}
-          <ChevronsUpDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search store..." className="h-9" />
-          <CommandList>
-            <CommandEmpty>No store found.</CommandEmpty>
-            <CommandGroup heading="Stores">
-              {stores.map((store) => (
+    <>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-label="Select a store"
+            aria-expanded={open}
+            className="w-[200px] justify-between"
+          >
+            <StoreIcon className="mr-2 h-4 w-4" />
+            {currentStore
+              ? stores.find((store) => store.id === currentStore)?.name
+              : "Select store..."}
+            <ChevronsUpDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder="Search store..." className="h-9" />
+            <CommandList>
+              <CommandEmpty>No store found.</CommandEmpty>
+              <CommandGroup heading="Stores">
+                {stores.map((store) => (
+                  <CommandItem
+                    key={store.id}
+                    value={store.name}
+                    onSelect={() => {
+                      setCurrentStore(store.id);
+                      setOpen(false);
+                      router.push(`/${store.id}`);
+                    }}
+                  >
+                    <StoreIcon className="mr-2 h-4 w-4" />
+                    {store.name}
+                    {currentStore === store.id && (
+                      <CheckIcon className="ml-auto h-4 w-4" />
+                    )}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup>
                 <CommandItem
-                  key={store.id}
-                  value={store.name}
                   onSelect={() => {
-                    setCurrentStore(store.id);
                     setOpen(false);
-                    router.push(`/${store.id}`);
+                    setShowCreateDialog(true);
                   }}
+                  className="p-0"
                 >
-                  <StoreIcon className="mr-2 h-4 w-4" />
-                  {store.name}
-                  {currentStore === store.id && (
-                    <CheckIcon className="ml-auto h-4 w-4" />
-                  )}
+                  <Button variant="default" className="w-full">
+                    <CirclePlusIcon className="mr-2 h-4 w-4" />
+                    Create Store
+                  </Button>
                 </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup>
-              <CommandItem
-                onSelect={() => {
-                  setOpen(false);
-                  setCreateStore(true);
-                }}
-                className="p-0"
-              >
-                <Button variant="default" className="w-full">
-                  <CirclePlusIcon className="mr-2 h-4 w-4" />
-                  Create Store
-                </Button>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {showCreateDialog && (
+        <CreateStoreDialog
+          open={showCreateDialog}
+          setOpen={setShowCreateDialog}
+        />
+      )}
+    </>
   );
 }

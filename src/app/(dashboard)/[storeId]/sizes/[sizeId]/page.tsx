@@ -84,13 +84,13 @@ export default async function SizePage({ params }: SizePageProps) {
           description={`Manage this billboard for your ${store?.name} store.`}
         />
         <DeleteSizeDialog
+          defaultState={true}
           size={{
             id: size.id,
             name: size.name,
             value: size.value,
             createdAt: format(size.createdAt, "MMMM do, yyyy"),
           }}
-          triggerBtnClassName="w-max"
         />
       </div>
       <Separator />
