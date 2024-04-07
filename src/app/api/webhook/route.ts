@@ -50,13 +50,13 @@ export async function POST(request: Request) {
         },
       });
 
-      const productIds = order.OrderItem.map(
-        (orderItem) => orderItem.productId,
-      );
-
       // Use this code if you want each product to be archived upon purchase.
       // Otherwise, manually update products as archived in the admin panel.
       /*
+        const productIds = order.OrderItem.map(
+          (orderItem) => orderItem.productId,
+        );
+
         await prisma.product.updateMany({
           where: { id: { in: [...productIds] } },
           data: { isArchived: true },
