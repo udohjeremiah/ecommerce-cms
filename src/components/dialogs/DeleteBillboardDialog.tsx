@@ -68,6 +68,7 @@ export default function DeleteBillboardDialog({
 
       const { store } = await response.json();
       setIsDeleting(false);
+      setOpen?.(false);
       router.refresh();
       toast.success(
         `🙂 Billboard for the ${store.name} store deleted successfully.`,
@@ -129,7 +130,7 @@ export default function DeleteBillboardDialog({
           </div>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <Button
             variant="destructive"
             disabled={billboardLabel !== billboard.label || isDeleting}

@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import Link from "next/link";
-
 import { useParams, usePathname } from "next/navigation";
 
 import { MenuIcon, ShoppingBagIcon } from "lucide-react";

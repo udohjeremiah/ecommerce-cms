@@ -68,6 +68,7 @@ export default function DeleteProductDialog({
 
       const { store } = await response.json();
       setIsDeleting(false);
+      setOpen?.(false);
       router.refresh();
       toast.success(
         `🙂 ${product.name} product for the ${store.name} store deleted successfully.`,
@@ -110,7 +111,7 @@ export default function DeleteProductDialog({
           <AlertDialogDescription>
             This action cannot be undone. It will permanently delete this
             product and remove all associated data from our servers. Please
-            ensure that you remove all categories associated with this product
+            ensure that you remove all orders associated with this product
             before proceeding.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -129,7 +130,7 @@ export default function DeleteProductDialog({
           </div>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <Button
             variant="destructive"
             disabled={productName !== product.name || isDeleting}

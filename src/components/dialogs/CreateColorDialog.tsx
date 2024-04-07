@@ -86,6 +86,7 @@ export default function CreateColorDialog() {
       }
 
       const { store } = await response.json();
+      form.reset();
       setOpen(false);
       router.refresh();
       toast.success(
@@ -113,12 +114,12 @@ export default function CreateColorDialog() {
           Add New
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Category</DialogTitle>
+          <DialogTitle>Create Color</DialogTitle>
           <DialogDescription>
-            Add a new category to your store and efficiently manage your
-            products, categories, and more.
+            Add a new color to your store and efficiently manage your products,
+            categories, and more.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

@@ -68,6 +68,7 @@ export default function DeleteColorDialog({
 
       const { store } = await response.json();
       setIsDeleting(false);
+      setOpen?.(false);
       router.refresh();
       toast.success(
         `🙂 ${color.name} color for the ${store.name} store deleted successfully.`,
@@ -128,7 +129,7 @@ export default function DeleteColorDialog({
           </div>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <Button
             variant="destructive"
             disabled={colorName !== color.name || isDeleting}

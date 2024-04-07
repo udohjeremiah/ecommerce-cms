@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 export type OrderColumn = {
   id: string;
   isPaid: boolean;
+  name: string;
+  email: string;
   phone: string;
   address: string;
   products: string;
@@ -25,6 +27,20 @@ export const columns: ColumnDef<OrderColumn>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Products
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
