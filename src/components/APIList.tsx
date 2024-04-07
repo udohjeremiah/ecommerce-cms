@@ -26,11 +26,11 @@ export default function APIList({ apis = [] }: APIListProps) {
 
   const isMounted = useMounted();
 
-  const baseUrl = `${window.location.origin}/api/${params.storeId}`;
-
   if (!isMounted) {
     return null;
   }
+
+  const baseUrl = `${window.location.origin}/api/${params.storeId}`;
 
   return (
     <>
