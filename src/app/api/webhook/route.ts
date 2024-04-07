@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         });
       */
 
-      return new NextResponse(null, { status: 200 });
+      return NextResponse.json(null, { status: 200 });
     }
   } catch (error) {
     console.error("[STOREID]_WEBHOOK_POST] Error:", error);
