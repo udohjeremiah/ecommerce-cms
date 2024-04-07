@@ -10,6 +10,7 @@
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore .",
     "prepare": "husky",
+    "postinstall": "prisma generate",
     "generate": "dotenv -e .env.local pnpm dlx prisma generate",
     "migrate": "dotenv -e .env.local pnpm dlx prisma migrate dev",
     "studio": "dotenv -e .env.local pnpm dlx prisma studio"
