@@ -33,6 +33,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -49,8 +50,8 @@ const formSchema = z.object({
     .min(1, {
       message: "Product name must be at least 4 characters.",
     })
-    .max(20, {
-      message: "Product name must be at most 60 characters.",
+    .max(120, {
+      message: "Product name must be at most 120 characters.",
     }),
   images: z
     .any()
@@ -146,6 +147,7 @@ export default function CreateProductDialog({
       }
 
       const { store } = await response.json();
+      form.reset();
       setOpen(false);
       router.refresh();
       toast.success(
@@ -173,245 +175,247 @@ export default function CreateProductDialog({
           Add New
         </Button>
       </DialogTrigger>
-      <DialogContent
-        className={cn("max-h-[600px] overflow-y-auto", "sm:max-w-md")}
-      >
-        <DialogHeader>
-          <DialogTitle>Create Product</DialogTitle>
-          <DialogDescription>
-            Add a new product to your store and efficiently manage your
-            products, categories, and more.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={form.formState.isSubmitting}
-                      placeholder="e.g., Suits"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    This is the name of your new product.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Images</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      disabled={form.formState.isSubmitting}
-                      {...field}
-                      value={field.value?.fileName}
-                      onChange={(event) =>
-                        form.setValue("images", event.target.files)
-                      }
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    These are the images for your new product.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      disabled={form.formState.isSubmitting}
-                      placeholder="e.g., 9.99"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    This is the price of your new product.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category ID</FormLabel>
-                  <Select
-                    disabled={form.formState.isSubmitting}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category ID to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categories.map((category, index) => (
-                        <SelectItem key={index} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    This is the category for your new product.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="sizeId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Size ID</FormLabel>
-                  <Select
-                    disabled={form.formState.isSubmitting}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a size ID to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {sizes.map((size, index) => (
-                        <SelectItem key={index} value={size.id}>
-                          {size.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    This is the size for your new product.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="colorId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color ID</FormLabel>
-                  <Select
-                    disabled={form.formState.isSubmitting}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a color ID to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {colors.map((color, index) => (
-                        <SelectItem key={index} value={color.id}>
-                          {color.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    This is the color for your new product.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isFeatured"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Featured</FormLabel>
-                    <FormDescription>
-                      This adds your new product to the featured products.
-                    </FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isArchived"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Archived</FormLabel>
-                    <FormDescription>
-                      This adds your new product to the archived products.
-                    </FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={form.formState.isSubmitting}
-            >
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            onClick={form.handleSubmit(onSubmit)}
-          >
-            {form.formState.isSubmitting ? (
-              <>
-                <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                Creating
-              </>
-            ) : (
-              "Create"
-            )}
-          </Button>
-        </DialogFooter>
+      <DialogContent className="p-0">
+        <ScrollArea className="max-h-[600px]">
+          <div className="grid gap-4 p-6">
+            <DialogHeader>
+              <DialogTitle>Create Product</DialogTitle>
+              <DialogDescription>
+                Add a new product to your store and efficiently manage your
+                products, categories, and more.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form className="space-y-8">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          disabled={form.formState.isSubmitting}
+                          placeholder="e.g., Suits"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This is the name of your new product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="images"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Images</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          disabled={form.formState.isSubmitting}
+                          {...field}
+                          value={field.value?.fileName}
+                          onChange={(event) =>
+                            form.setValue("images", event.target.files)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        These are the images for your new product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          disabled={form.formState.isSubmitting}
+                          placeholder="e.g., 9.99"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This is the price of your new product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category ID</FormLabel>
+                      <Select
+                        disabled={form.formState.isSubmitting}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category ID to display" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories.map((category, index) => (
+                            <SelectItem key={index} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        This is the category for your new product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sizeId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Size ID</FormLabel>
+                      <Select
+                        disabled={form.formState.isSubmitting}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a size ID to display" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {sizes.map((size, index) => (
+                            <SelectItem key={index} value={size.id}>
+                              {size.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        This is the size for your new product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="colorId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Color ID</FormLabel>
+                      <Select
+                        disabled={form.formState.isSubmitting}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a color ID to display" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {colors.map((color, index) => (
+                            <SelectItem key={index} value={color.id}>
+                              {color.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        This is the color for your new product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="isFeatured"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Featured</FormLabel>
+                        <FormDescription>
+                          This adds your new product to the featured products.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="isArchived"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Archived</FormLabel>
+                        <FormDescription>
+                          This adds your new product to the archived products.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+            <DialogFooter className="gap-2">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={form.formState.isSubmitting}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                onClick={form.handleSubmit(onSubmit)}
+              >
+                {form.formState.isSubmitting ? (
+                  <>
+                    <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                    Creating
+                  </>
+                ) : (
+                  "Create"
+                )}
+              </Button>
+            </DialogFooter>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

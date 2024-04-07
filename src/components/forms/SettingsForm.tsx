@@ -36,8 +36,8 @@ interface SettingsFormProps {
 const storeNameFormSchema = z.object({
   name: z
     .string()
-    .min(4, {
-      message: "Store name must be at least 4 characters.",
+    .min(1, {
+      message: "Store name must be at least 1 characters.",
     })
     .max(20, {
       message: "Store name must be at most 20 characters.",

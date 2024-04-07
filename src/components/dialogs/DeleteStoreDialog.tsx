@@ -108,7 +108,7 @@ export default function DeleteStoreDialog({ store }: DeleteStoreDialogProps) {
           </div>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <Button
             variant="destructive"
             disabled={storeName !== store.name || isDeleting}

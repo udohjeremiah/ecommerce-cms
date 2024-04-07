@@ -84,6 +84,7 @@ export default function CreateSizeDialog() {
 
       const { store } = await response.json();
       setOpen(false);
+      form.reset();
       router.refresh();
       toast.success(
         `🎉 New size for the ${store.name} store has been created successfully.`,
@@ -110,12 +111,12 @@ export default function CreateSizeDialog() {
           Add New
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Category</DialogTitle>
+          <DialogTitle>Create Size</DialogTitle>
           <DialogDescription>
-            Add a new category to your store and efficiently manage your
-            products, categories, and more.
+            Add a new size to your store and efficiently manage your products,
+            categories, and more.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -129,7 +130,7 @@ export default function CreateSizeDialog() {
                   <FormControl>
                     <Input
                       disabled={form.formState.isSubmitting}
-                      placeholder="e.g., Large"
+                      placeholder="e.g., Medium"
                       {...field}
                     />
                   </FormControl>
@@ -149,7 +150,7 @@ export default function CreateSizeDialog() {
                   <FormControl>
                     <Input
                       disabled={form.formState.isSubmitting}
-                      placeholder="e.g., lg"
+                      placeholder="e.g., M"
                       {...field}
                     />
                   </FormControl>

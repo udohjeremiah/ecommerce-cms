@@ -104,6 +104,7 @@ export default function CreateBillboardDialog({
       }
 
       const { store } = await response.json();
+      form.reset();
       setOpen(false);
       router.refresh();
       toast.success(
@@ -131,7 +132,7 @@ export default function CreateBillboardDialog({
           Add New
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Billboard</DialogTitle>
           <DialogDescription>

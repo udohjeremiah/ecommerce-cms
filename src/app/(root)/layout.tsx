@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, auth } from "@clerk/nextjs";
 
 import "@/styles/globals.css";
 
+import CreateStoreDialog from "@/components/dialogs/CreateStoreDialog";
 import { Toaster } from "@/components/ui/sonner";
+
+import prisma from "@/lib/prisma";
 
 import ThemeProvider from "@/providers/ThemeProvider";
 
@@ -18,7 +22,19 @@ export const metadata: Metadata = {
     "A comprehensive content management system platform for managing online stores and content, offering robust features for product management, order processing, customization, and more.",
 };
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const { userId } = auth();
+
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const store = await prisma.store.findFirst({ where: { userId } });
+
+  if (store) {
+    redirect(`/${store.id}`);
+  }
+
   return (
     <ClerkProvider>
       <html lang="en">
@@ -29,6 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             enableSystem
             disableTransitionOnChange
           >
+            <CreateStoreDialog defaultState={true} />
             {children}
             <Toaster closeButton richColors />
           </ThemeProvider>

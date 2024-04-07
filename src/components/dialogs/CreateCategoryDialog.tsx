@@ -92,6 +92,7 @@ export default function CreateCategoryDialog({
       }
 
       const { store } = await response.json();
+      form.reset();
       setOpen(false);
       router.refresh();
       toast.success(
@@ -119,7 +120,7 @@ export default function CreateCategoryDialog({
           Add New
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Category</DialogTitle>
           <DialogDescription>
@@ -138,7 +139,7 @@ export default function CreateCategoryDialog({
                   <FormControl>
                     <Input
                       disabled={form.formState.isSubmitting}
-                      placeholder="e.g., Men"
+                      placeholder="e.g., Suits"
                       {...field}
                     />
                   </FormControl>

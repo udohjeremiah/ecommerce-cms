@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { useWindowOrigin } from "@/hooks/use-window-origin";
+import { useMounted } from "@/hooks/use-mounted";
 
 import { cn } from "@/lib/utils";
 
@@ -24,9 +24,13 @@ interface APIListProps {
 export default function APIList({ apis = [] }: APIListProps) {
   const params = useParams();
 
-  const origin = useWindowOrigin();
+  const isMounted = useMounted();
 
-  const baseUrl = `${origin}/api/${params.storeId}`;
+  const baseUrl = `${window.location.origin}/api/${params.storeId}`;
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
@@ -39,11 +43,13 @@ export default function APIList({ apis = [] }: APIListProps) {
               {variant}
             </Badge>
           </AlertTitle>
-          <AlertDescription className="mt-4 flex items-center justify-between gap-4">
+          <AlertDescription className="mt-4 flex items-center gap-4">
             <code
               className={cn(
-                "inline-block whitespace-nowrap rounded-lg bg-muted px-2 py-1 font-mono text-sm font-normal",
-                variant === "admin" && "bg-destructive",
+                "inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md px-4 py-2 font-mono text-sm font-medium shadow-sm transition-colors",
+                variant === "admin"
+                  ? "bg-destructive text-destructive-foreground"
+                  : "bg-secondary text-secondary-foreground",
               )}
             >
               {`${baseUrl}${route && `/${route}`}`}

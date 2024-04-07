@@ -10,8 +10,8 @@ import Heading from "@/components/Heading";
 import { OrderColumn, columns } from "@/components/columns/OrderColumns";
 import { Separator } from "@/components/ui/separator";
 
-import { cn } from "@/lib/utils";
 import prisma from "@/lib/prisma";
+import { cn } from "@/lib/utils";
 
 interface OrdersPageProps {
   params: { storeId: string };
@@ -66,6 +66,8 @@ export default async function OrdersPage({ params }: OrdersPageProps) {
   const formattedOrders: OrderColumn[] = orders.map((order) => ({
     id: order.id,
     isPaid: order.isPaid,
+    name: order.name,
+    email: order.email,
     phone: order.phone,
     address: order.address,
     products: order.OrderItem.map((orderItem) => orderItem.Product.name).join(

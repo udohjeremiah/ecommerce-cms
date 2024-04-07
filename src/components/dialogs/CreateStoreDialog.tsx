@@ -34,8 +34,8 @@ import { Input } from "@/components/ui/input";
 const formSchema = z.object({
   name: z
     .string()
-    .min(4, {
-      message: "Store name must be at least 4 characters.",
+    .min(1, {
+      message: "Store name must be at least 1 characters.",
     })
     .max(20, {
       message: "Store name must be at most 20 characters.",
@@ -91,7 +91,9 @@ export default function CreateStoreDialog({
       }
 
       const { store } = await response.json();
+      form.reset();
       router.push(`/${store.id}`);
+      router.refresh();
       toast.success(`🎉 ${store.name} store created successfully.`);
     } catch (error) {
       console.error(error);
@@ -112,7 +114,7 @@ export default function CreateStoreDialog({
         setOpen?.(open);
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Store</DialogTitle>
           <DialogDescription>
@@ -131,7 +133,7 @@ export default function CreateStoreDialog({
                   <FormControl>
                     <Input
                       disabled={form.formState.isSubmitting}
-                      placeholder="e.g., Suits"
+                      placeholder="e.g., Men"
                       {...field}
                     />
                   </FormControl>

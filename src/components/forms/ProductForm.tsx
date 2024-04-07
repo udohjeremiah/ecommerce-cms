@@ -61,8 +61,8 @@ const nameFormSchema = z.object({
     .min(1, {
       message: "Product name must be at least 1 characters.",
     })
-    .max(20, {
-      message: "Product name must be at most 20 characters.",
+    .max(120, {
+      message: "Product name must be at most 120 characters.",
     }),
 });
 
